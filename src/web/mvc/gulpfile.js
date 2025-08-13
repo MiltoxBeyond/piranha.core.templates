@@ -16,7 +16,7 @@ gulp.task("min", function (done) {
     done();
 });
 
-gulp.task("serve", gulp.parallel(["min", "watch"]));
+gulp.task("serve", gulp.parallel(["min"]));
 
 gulp.task("watch", function (done) {
     let isDone = false;
@@ -24,14 +24,14 @@ gulp.task("watch", function (done) {
         if (isDone) return;
         isDone = true;
         done();
-        process.exit();
+        process.exit(0);
     }
 
-    process.on("SIGINT", exit);
-    process.on("SIGTERM", exit);
-    process.on("SIGQUIT", exit);
-    process.on("SIGBREAK", exit);
-    process.on("uncaughtException", exit);
+    ["SIGINT", "SIGTERM", "SIGQUIT", "SIGBREAK", "uncaughtException"].forEach(
+        (signal) => {
+            process.on(signal, exit);
+        }
+    );
 
     gulp.watch("assets/scss/**/*.scss", gulp.series("serve"));
 });
